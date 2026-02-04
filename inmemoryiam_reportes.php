@@ -85,6 +85,35 @@ $base = rtrim(base_url(), '/\\');
     .empty{padding:16px;color:#6b7280}
     .btn{display:inline-block;padding:8px 12px;background:#2563eb;color:#fff;text-decoration:none;border-radius:6px}
     .size{color:#6b7280;font-size:13px}
+
+    .file-info{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+  .file-icon{
+    width:36px;
+    height:36px;
+    background:#fee2e2;
+    color:#b91c1c;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    font-size:12px;
+  }
+
+  .status{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:12px;
+    font-size:12px;
+    font-weight:600;
+    background:#dcfce7;
+    color:#166534;
+  }
   </style>
 </head>
 <body>
@@ -94,8 +123,6 @@ $base = rtrim(base_url(), '/\\');
 </header>
 
 <main>
-
-  <!-- RESUMEN -->
   <section class="summary">
     <div class="box">
       Total de reportes
@@ -124,21 +151,30 @@ $base = rtrim(base_url(), '/\\');
       <table>
         <thead>
           <tr>
-            <th>Nombre</th>
+            <th>Archivo</th>
             <th>Fecha</th>
             <th>Tamaño</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           <?php foreach ($files as $file): ?>
             <tr>
-              <td><?php echo htmlspecialchars($file['name']); ?></td>
+              <td>
+                <div class="file-info">
+                  <div class="file-icon">PDF</div>
+                  <?php echo htmlspecialchars($file['name']); ?>
+                </div>
+              </td>
               <td><?php echo date('Y-m-d H:i:s', $file['mtime']); ?></td>
               <td class="size"><?php echo formatBytes($file['size']); ?></td>
               <td>
+                <span class="status">Listo</span>
+              </td>
+              <td>
                 <a class="btn" href="<?php echo $base . '/reportes/' . rawurlencode($file['name']); ?>" download>
-                  Descargar
+                  Descargar PDF
                 </a>
               </td>
             </tr>
