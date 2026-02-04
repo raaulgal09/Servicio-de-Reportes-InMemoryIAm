@@ -1,19 +1,27 @@
 <?php
 $dir = __DIR__ . DIRECTORY_SEPARATOR . 'reportes';
 $files = [];
+$totalSize = 0;
+
 if (is_dir($dir)) {
     foreach (scandir($dir) as $f) {
         if ($f === '.' || $f === '..') continue;
         $path = $dir . DIRECTORY_SEPARATOR . $f;
         if (is_file($path) && strtolower(pathinfo($path, PATHINFO_EXTENSION)) === 'pdf') {
+            $size = filesize($path);
+            $totalSize += $size;
             $files[] = [
                 'name' => $f,
-                'mtime' => filemtime($path)
+                'mtime' => filemtime($path),
+                'size' => $size
             ];
         }
     }
 }
-usort($files, function ($a, $b) { return $b['mtime'] <=> $a['mtime']; });
+
+usort($files, function ($a, $b) {
+    return $b['mtime'] <=> $a['mtime'];
+});
 
 function base_url(): string {
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
@@ -22,8 +30,17 @@ function base_url(): string {
     return $scheme . '://' . $host . $scriptDir;
 }
 
+function formatBytes($bytes, $precision = 2) {
+    $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    $bytes = max($bytes, 0);
+    $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+    $pow = min($pow, count($units) - 1);
+    return round($bytes / (1024 ** $pow), $precision) . ' ' . $units[$pow];
+}
+
 $base = rtrim(base_url(), '/\\');
-?><!DOCTYPE html>
+?>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -42,6 +59,7 @@ $base = rtrim(base_url(), '/\\');
     tr:hover{background:#f9fafb}
     .empty{padding:16px;color:#6b7280}
     .btn{display:inline-block;padding:8px 12px;background:#2563eb;color:#fff;text-decoration:none;border-radius:6px}
+    .size{color:#6b7280;font-size:13px}
   </style>
 </head>
 <body>
@@ -53,6 +71,7 @@ $base = rtrim(base_url(), '/\\');
       <header>
         <strong>Listado de reportes PDF</strong>
       </header>
+
       <?php if (empty($files)): ?>
         <div class="empty">No hay reportes generados.</div>
       <?php else: ?>
@@ -61,6 +80,7 @@ $base = rtrim(base_url(), '/\\');
             <tr>
               <th>Nombre</th>
               <th>Fecha</th>
+              <th>Tamaño</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -69,8 +89,11 @@ $base = rtrim(base_url(), '/\\');
               <tr>
                 <td><?php echo htmlspecialchars($file['name']); ?></td>
                 <td><?php echo date('Y-m-d H:i:s', $file['mtime']); ?></td>
+                <td class="size"><?php echo formatBytes($file['size']); ?></td>
                 <td>
-                  <a class="btn" href="<?php echo $base . '/reportes/' . rawurlencode($file['name']); ?>" download>Descargar</a>
+                  <a class="btn" href="<?php echo $base . '/reportes/' . rawurlencode($file['name']); ?>" download>
+                    Descargar
+                  </a>
                 </td>
               </tr>
             <?php endforeach; ?>
