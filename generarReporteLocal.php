@@ -9,6 +9,8 @@ function generarHtmlReporte(array $data): string
     $info = $data['reporte_info'];
     $folio = strtoupper(uniqid("REP-"));
 
+    $logoPath = "file:///" . str_replace('\\', '/', realpath(__DIR__ . '/img/EMBLEMA-AZUL-V.png'));
+
     $html = "
     <html>
     <head>
@@ -16,71 +18,127 @@ function generarHtmlReporte(array $data): string
     <style>
 
     @page {
-        margin: 100px 40px 80px 40px;
+        margin: 120px 40px 100px 40px;
     }
 
-    body { 
-        font-family: 'Times New Roman', serif; 
+    body {
+        font-family: 'Times New Roman', serif;
         font-size: 12px;
         color: #2c2c2c;
     }
 
     header {
         position: fixed;
-        top: -80px;
+        top: -100px;
         left: 0;
         right: 0;
-        height: 70px;
+        height: 90px;
+    }
+
+    .top-bar {
+        background-color: #0B3D91;
+        height: 8px;
+        width: 100%;
     }
 
     .header-table {
         width: 100%;
+        margin-top: 5px;
     }
 
     .logo {
-        width: 80px;
+        width: 70px;
     }
 
     .title-block {
-        text-align: left;
+        font-size: 12px;
+    }
+
+    .watermark {
+        position: fixed;
+        top: 45%;
+        left: 20%;
+        opacity: 0.05;
+        font-size: 80px;
+        transform: rotate(-30deg);
+        color: #000;
     }
 
     h1 {
         text-align: center;
-        font-size: 18px;
-        margin-bottom: 10px;
+        font-size: 22px;
+        color: #0B3D91;
+        margin-top: 30px;
     }
 
     h2 {
-        font-size: 14px;
+        font-size: 15px;
         color: #0B3D91;
-        margin-top: 25px;
-        border-bottom: 1px solid #0B3D91;
-        padding-bottom: 4px;
+        margin-top: 35px;
+        border-bottom: 2px solid #0B3D91;
+        padding-bottom: 5px;
+    }
+
+    .cover-box {
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 30px;
+    }
+
+    .cover-box p {
+        margin: 5px 0;
     }
 
     .info-box {
         background-color: #f2f4f8;
-        padding: 10px;
+        padding: 12px;
+        border-left: 5px solid #0B3D91;
+        margin-bottom: 25px;
+    }
+
+    .kpi-container {
+        width: 100%;
+        margin-bottom: 25px;
+    }
+
+    .kpi-box {
+        width: 48%;
+        display: inline-block;
+        text-align: center;
+        padding: 15px;
         border: 1px solid #ccc;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
+    }
+
+    .kpi-value {
+        font-size: 22px;
+        font-weight: bold;
+        color: #0B3D91;
+    }
+
+    .kpi-label {
+        font-size: 11px;
+        text-transform: uppercase;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 25px;
+        margin-bottom: 30px;
+        border-radius: 6px;
+        overflow: hidden;
     }
 
     th {
-        background-color: #0B3D91;
+        background-color: #123B7A;
         color: white;
-        padding: 6px;
-        font-weight: bold;
+        padding: 7px;
+        font-size: 11px;
+        text-transform: uppercase;
     }
 
-    th, td {
-        border: 1px solid #999;
+    td {
+        border: 1px solid #ccc;
         padding: 6px;
         text-align: center;
     }
@@ -91,10 +149,10 @@ function generarHtmlReporte(array $data): string
 
     footer {
         position: fixed;
-        bottom: -60px;
+        bottom: -70px;
         left: 0;
         right: 0;
-        height: 50px;
+        height: 60px;
         font-size: 10px;
         text-align: center;
         color: #555;
@@ -104,14 +162,17 @@ function generarHtmlReporte(array $data): string
     </head>
     <body>
 
+    <div class='watermark'>INMEMORYIAM</div>
+
     <header>
+        <div class='top-bar'></div>
         <table class='header-table'>
             <tr>
-                <td width='90'>
-                    <img src='" . __DIR__ . "/img/EMBLEMA-AZUL-V.png' class='logo'>
+                <td width='80'>
+                    <img src='$logoPath' class='logo'>
                 </td>
                 <td class='title-block'>
-                    <strong>Universidad Autónoma</strong><br>
+                    <strong>Universidad Autónoma de San Luis Potosi</strong><br>
                     Sistema InMemoryIAM<br>
                     Reporte Oficial de Interacciones<br>
                     <strong>Folio:</strong> $folio
@@ -123,16 +184,36 @@ function generarHtmlReporte(array $data): string
 
     <footer>
         <hr>
-        Generado el: " . date('d/m/Y H:i') . " | Sistema InMemoryIAM
+        Documento confidencial – Uso interno<br>
+        Universidad Autónoma | Sistema InMemoryIAM<br>
+        Generado el: " . date('d/m/Y H:i') . "
     </footer>
 
     <main>
 
-    <h1>" . htmlspecialchars($info['titulo']) . "</h1>
+    <div class='cover-box'>
+        <h1>" . htmlspecialchars($info['titulo']) . "</h1>
+        <p><strong>Periodo:</strong> " . htmlspecialchars($info['mes']) . " " . htmlspecialchars($info['ano']) . "</p>
+        <p><strong>Total de Interacciones:</strong> " . htmlspecialchars($info['total_interacciones']) . "</p>
+    </div>
 
+    <h2>Resumen Ejecutivo</h2>
     <div class='info-box'>
-        <strong>Mes:</strong> " . htmlspecialchars($info['mes']) . " " . htmlspecialchars($info['ano']) . "<br>
-        <strong>Total de Interacciones:</strong> " . htmlspecialchars($info['total_interacciones']) . "
+        Durante el periodo reportado se registraron 
+        <strong>" . htmlspecialchars($info['total_interacciones']) . "</strong> interacciones 
+        dentro del sistema InMemoryIAM.
+    </div>
+
+    <h2>Indicadores Clave</h2>
+    <div class='kpi-container'>
+        <div class='kpi-box'>
+            <div class='kpi-value'>" . htmlspecialchars($info['total_interacciones']) . "</div>
+            <div class='kpi-label'>Total Interacciones</div>
+        </div>
+        <div class='kpi-box'>
+            <div class='kpi-value'>" . count($data['estadisticas_personalidad']) . "</div>
+            <div class='kpi-label'>Personalidades Activas</div>
+        </div>
     </div>
 
     <h2>Interacciones Destacadas</h2>
@@ -206,9 +287,8 @@ function generarReporteLocal(string $jsonData, string $directorioSalida, string 
     $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
 
-  
     $canvas = $dompdf->getCanvas();
-    $canvas->page_text(500, 820, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 8, array(0,0,0));
+    $canvas->page_text(480, 820, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 8, array(0,0,0));
 
     $pdfOutput = $dompdf->output();
 
