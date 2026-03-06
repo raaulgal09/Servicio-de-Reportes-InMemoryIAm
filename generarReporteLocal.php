@@ -303,3 +303,4 @@ function generarReporteLocal(string $jsonData, string $directorioSalida, string 
 
     return $rutaCompleta;
 }
+
