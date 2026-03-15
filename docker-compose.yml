@@ -1,0 +1,9 @@
+services:
+  servicio_reporte:
+    build: .
+    container_name: servicio_reporte_php
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+    restart: unless-stopped

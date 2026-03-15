@@ -9,7 +9,14 @@ function generarHtmlReporte(array $data): string
     $info = $data['reporte_info'];
     $folio = strtoupper(uniqid("REP-"));
 
-    $logoPath = "file:///" . str_replace('\\', '/', realpath(__DIR__ . '/img/EMBLEMA-AZUL-V.png'));
+    $logoRealPath = realpath(__DIR__ . '/img/uaslp-logo.png');
+
+    if (!$logoRealPath || !is_file($logoRealPath)) {
+        throw new Exception('No se encontró el logo en img/uaslp-logo.png');
+    }
+
+    $logoData = base64_encode(file_get_contents($logoRealPath));
+    $logoPath = 'data:image/png;base64,' . $logoData;
 
     $html = "
     <html>
@@ -48,6 +55,7 @@ function generarHtmlReporte(array $data): string
 
     .logo {
         width: 70px;
+        height: auto;
     }
 
     .title-block {
@@ -169,7 +177,7 @@ function generarHtmlReporte(array $data): string
         <table class='header-table'>
             <tr>
                 <td width='80'>
-                    <img src='$logoPath' class='logo'>
+                    <img src='$logoPath' class='logo' alt='Logo UASLP'>
                 </td>
                 <td class='title-block'>
                     <strong>Universidad Autónoma de San Luis Potosi</strong><br>
