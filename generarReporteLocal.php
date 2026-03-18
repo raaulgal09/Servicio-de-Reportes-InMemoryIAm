@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('America/Mexico_City');
+
 require 'vendor/autoload.php';
 
 use Dompdf\Dompdf;
@@ -219,7 +221,7 @@ function generarHtmlReporte(array $data): string
             <div class='kpi-label'>Total Interacciones</div>
         </div>
         <div class='kpi-box'>
-            <div class='kpi-value'>" . count($data['estadisticas_personalidad']) . "</div>
+            <div class='kpi-value'>" . count($data['estadisticas_personalidad'] ?? []) . "</div>
             <div class='kpi-label'>Personalidades Activas</div>
         </div>
     </div>
@@ -235,7 +237,7 @@ function generarHtmlReporte(array $data): string
             <th>ID Sesión</th>
         </tr>";
 
-    foreach ($data['interacciones_destacadas'] as $interaccion) {
+    foreach (($data['interacciones_destacadas'] ?? []) as $interaccion) {
         $html .= "
         <tr>
             <td>" . htmlspecialchars($interaccion['id_interaccion']) . "</td>
@@ -258,7 +260,7 @@ function generarHtmlReporte(array $data): string
             <th>Calificación Promedio</th>
         </tr>";
 
-    foreach ($data['estadisticas_personalidad'] as $stat) {
+    foreach (($data['estadisticas_personalidad'] ?? []) as $stat) {
         $html .= "
         <tr>
             <td>" . htmlspecialchars($stat['personalidad']) . "</td>
@@ -300,15 +302,16 @@ function generarReporteLocal(string $jsonData, string $directorioSalida, string 
 
     $pdfOutput = $dompdf->output();
 
-    if (!is_dir($directorioSalida)) {
-        mkdir($directorioSalida, 0777, true);
+    if (!is_dir($directorioSalida) && !mkdir($directorioSalida, 0777, true)) {
+        throw new Exception("No se pudo crear el directorio de salida.");
     }
 
     $nombreArchivo = $nombreBase . "_" . date("Y-m-d_His") . ".pdf";
     $rutaCompleta = $directorioSalida . DIRECTORY_SEPARATOR . $nombreArchivo;
 
-    file_put_contents($rutaCompleta, $pdfOutput);
+    if (file_put_contents($rutaCompleta, $pdfOutput) === false) {
+        throw new Exception("No se pudo guardar el archivo PDF.");
+    }
 
     return $rutaCompleta;
 }
-
