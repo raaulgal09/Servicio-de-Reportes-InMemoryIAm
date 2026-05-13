@@ -543,7 +543,7 @@ $base = rtrim(base_url(), '/\\');
   <nav class="navbar">
         <div class="brand">
             <div class="brand-logo">
-            <img src="img/EMBLEMA-AZUL-V.png" alt="UASLP">
+            <img src="img/uni.png" alt="UASLP">
             </div>
 
             <div class="brand-text">
